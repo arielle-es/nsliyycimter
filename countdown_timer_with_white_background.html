@@ -1,0 +1,90 @@
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+<!-- Countdown HTML -->
+<div id="countdown-wrapper" style="display: flex; gap: 10px; font-family: 'Poppins', sans-serif; justify-content: center; align-items: center; padding: 20px; background-color: #ffffff;">
+  <div class="count-box"><span id="days">00</span><div class="label">Days</div></div>
+  <div class="count-box"><span id="hours">00</span><div class="label">Hours</div></div>
+  <div class="count-box"><span id="minutes">00</span><div class="label">Minutes</div></div>
+  <div class="count-box"><span id="seconds">00</span><div class="label">Seconds</div></div>
+</div>
+
+<!-- Styles -->
+<style>
+  .count-box {
+    background-color: #E2E8F0;
+    border-radius: 10px;
+    padding: 10px 15px;
+    text-align: center;
+    min-width: 60px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .count-box span {
+    font-size: 2rem;
+    font-weight: 600;
+    display: block;
+    color: #1B1F3B;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+</style>
+
+<!-- Script -->
+<script>
+  // Target date in PST
+  const targetDate = new Date("2025-11-04T08:00:00.000Z"); // Midnight PST = 8:00 AM UTC
+
+  function getPSTNow() {
+    const now = new Date();
+
+    const pstFormatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Los_Angeles",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    const parts = pstFormatter.formatToParts(now).reduce((acc, part) => {
+      if (part.type !== "literal") acc[part.type] = part.value;
+      return acc;
+    }, {});
+
+    return new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}-08:00`);
+  }
+
+  function updateCountdown() {
+    const now = getPSTNow();
+    const distance = targetDate - now;
+
+    if (distance <= 0) {
+      document.getElementById("days").textContent = "00";
+      document.getElementById("hours").textContent = "00";
+      document.getElementById("minutes").textContent = "00";
+      document.getElementById("seconds").textContent = "00";
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("days").textContent = String(days).padStart(2, '0');
+    document.getElementById("hours").textContent = String(hours).padStart(2, '0');
+    document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
+    document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
